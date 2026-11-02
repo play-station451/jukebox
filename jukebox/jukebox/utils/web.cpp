@@ -1,5 +1,7 @@
 #include "jukebox/utils/web.hpp"
 
+#include <cstdlib>
+#include <optional>
 #include <string>
 
 #include <Geode/utils/web.hpp>
@@ -28,6 +30,28 @@ std::string getErrorFromResponse(const geode::utils::web::WebResponse& res) {
     }
 
     return fmt::format("Web request failed with status code {}", res.code());
+}
+
+std::optional<geode::utils::web::ProxyOpts> getProxyOptsFromEnv() {
+    const char* vars[] = {"https_proxy", "HTTPS_PROXY", "http_proxy", "HTTP_PROXY", "all_proxy", "ALL_PROXY"};
+    std::string url;
+    for (const char* v : vars) {
+        if (const char* e = std::getenv(v)) {
+            if (*e != '\\0') { url = e; break; }
+        }
+    }
+    if (url.empty()) { return std::nullopt; }
+
+    geode::utils::web::ProxyOpts opts;
+    if (url.rfind("socks5h://", 0) == 0) { opts.type = geode::utils::web::ProxyType::SOCKS5H; }
+    else if (url.rfind("socks5://", 0) == 0) { opts.type = geode::utils::web::ProxyType::SOCKS5; }
+    else if (url.rfind("socks4a://", 0) == 0) { opts.type = geode::utils::web::ProxyType::SOCKS4A; }
+    else if (url.rfind("socks4://", 0) == 0) { opts.type = geode::utils::web::ProxyType::SOCKS4; }
+    else if (url.rfind("https://", 0) == 0) { opts.type = geode::utils::web::ProxyType::HTTPS; }
+    else { opts.type = geode::utils::web::ProxyType::HTTP; }
+
+    opts.address = url;
+    return opts;
 }
 
 }  // namespace jukebox::utils::web

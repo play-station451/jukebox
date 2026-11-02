@@ -15,6 +15,7 @@
 #include <matjson.hpp>
 
 #include "jukebox/download/hosted.hpp"
+#include "jukebox/utils/web.hpp"
 
 using namespace geode::prelude;
 using namespace arc;
@@ -56,8 +57,16 @@ web::WebFuture getMetadata(const std::string& id) {
 
     timeout = std::max(timeout, 30);
 
-    return web::WebRequest()
+    auto request = web::WebRequest()
         .timeout(std::chrono::seconds(timeout))
+        .version(web::HttpVersion::VERSION_1_1)
+        .userAgent("Jukebox");
+
+    if (auto proxy = jukebox::utils::web::getProxyOptsFromEnv()) {
+        request.proxyOpts(*proxy);
+    }
+
+    return request
         .bodyJSON(
             matjson::makeObject({
                 {"url", fmt::format("https://www.youtube.com/watch?v={}", id)},

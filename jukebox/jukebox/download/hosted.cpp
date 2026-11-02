@@ -26,9 +26,17 @@ arc::Future<Result<ByteVector>> startHostedDownload(const std::string_view url) 
 
     timeout = std::max(timeout, 30);
 
+    auto request = web::WebRequest()
+        .timeout(std::chrono::seconds(timeout))
+        .version(web::HttpVersion::VERSION_1_1)
+        .userAgent("Jukebox");
+
+    if (auto proxy = utils::web::getProxyOptsFromEnv()) {
+        request.proxyOpts(*proxy);
+    }
+
     const web::WebResponse response =
-        co_await web::WebRequest()
-            .timeout(std::chrono::seconds(timeout))
+        co_await request
             .onProgress([url = std::string(url)](const web::WebProgress& progress) {
                 const float actual = progress.downloadProgress().value_or(0.0f);
 
