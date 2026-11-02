@@ -48,6 +48,8 @@ Source/Geode/pkg/uber-apk-signer.jar
 # Ignore build folders
 **/build-win
 **/build
+**/buildmc
+**/buildw
 
 # ILY vscode
 **/.vscode
@@ -62,3 +64,5 @@ compile_commands.json
 
 # Jetbrains
 .idea
+
+jukebox/buildmc
