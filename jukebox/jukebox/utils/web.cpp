@@ -62,6 +62,7 @@ std::optional<geode::utils::web::ProxyOpts> getProxyOptsFromEnv() {
         addr = addr.substr(0, slashPos);
     }
     opts.address = addr;
+    opts.tunneling = true;
     return opts;
 }
 
