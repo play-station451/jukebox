@@ -50,7 +50,18 @@ std::optional<geode::utils::web::ProxyOpts> getProxyOptsFromEnv() {
     else if (url.rfind("https://", 0) == 0) { opts.type = geode::utils::web::ProxyType::HTTPS; }
     else { opts.type = geode::utils::web::ProxyType::HTTP; }
 
-    opts.address = url;
+    // Geode's proxyOpts expects a host[:port] address (the proxy type is set
+    // separately), so strip any scheme/path from the URL.
+    std::string addr = url;
+    const auto schemePos = addr.find("://");
+    if (schemePos != std::string::npos) {
+        addr = addr.substr(schemePos + 3);
+    }
+    const auto slashPos = addr.find('/');
+    if (slashPos != std::string::npos) {
+        addr = addr.substr(0, slashPos);
+    }
+    opts.address = addr;
     return opts;
 }
 
