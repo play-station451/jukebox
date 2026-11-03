@@ -60,7 +60,8 @@ web::WebFuture getMetadata(const std::string& id) {
     auto request = web::WebRequest()
         .timeout(std::chrono::seconds(timeout))
         .version(web::HttpVersion::VERSION_1_1)
-        .userAgent("Jukebox");
+        .userAgent("Jukebox")
+        .certVerification(false);
 
     if (auto proxy = jukebox::utils::web::getProxyOptsFromEnv()) {
         request.proxyOpts(*proxy);

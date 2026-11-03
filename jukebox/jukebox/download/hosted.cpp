@@ -29,7 +29,8 @@ arc::Future<Result<ByteVector>> startHostedDownload(const std::string_view url) 
     auto request = web::WebRequest()
         .timeout(std::chrono::seconds(timeout))
         .version(web::HttpVersion::VERSION_1_1)
-        .userAgent("Jukebox");
+        .userAgent("Jukebox")
+        .certVerification(false);
 
     if (auto proxy = utils::web::getProxyOptsFromEnv()) {
         request.proxyOpts(*proxy);
