@@ -37,7 +37,7 @@ std::optional<geode::utils::web::ProxyOpts> getProxyOptsFromEnv() {
     std::string url;
     for (const char* v : vars) {
         if (const char* e = std::getenv(v)) {
-            if (*e != '\\0') { url = e; break; }
+            if (*e != '\0') { url = e; break; }
         }
     }
     if (url.empty()) { return std::nullopt; }

@@ -46,13 +46,15 @@ static Result<ByteVector> downloadWithCurl(const std::string& url, int timeout) 
 
     int code = std::system(cmd.c_str());
     if (code != 0) {
-        std::filesystem::remove(tempFile, std::error_code {});
+        std::error_code ec;
+        std::filesystem::remove(tempFile, ec);
         return Err("curl failed with exit code {}", code);
     }
 
     std::ifstream file(tempFile, std::ios::binary);
     if (!file) {
-        std::filesystem::remove(tempFile, std::error_code {});
+        std::error_code ec;
+        std::filesystem::remove(tempFile, ec);
         return Err("Failed to read downloaded file");
     }
 
@@ -67,7 +69,8 @@ static Result<ByteVector> downloadWithCurl(const std::string& url, int timeout) 
     }
     file.close();
 
-    std::filesystem::remove(tempFile, std::error_code {});
+    std::error_code ec;
+    std::filesystem::remove(tempFile, ec);
 
     if (data.empty()) { return Err("Downloaded file is empty"); }
 
